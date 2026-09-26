@@ -1,0 +1,2 @@
+rule_id,severity,table_name,record_id,company_id,year,message
+DQ-05,CRITICAL,profitandloss,86,ADANIENSOL,Mar 2014,Sales must be greater than zero. Actual value: 0.0
