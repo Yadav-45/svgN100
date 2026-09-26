@@ -1,0 +1,11 @@
+timestamp,table_name,source_file,rows_read,rows_loaded,duplicates_removed,status
+2026-09-26T17:03:48,profitandloss,1788501607124-aad40f4f-profitandloss.xlsx,1276,1263,13,SUCCESS
+2026-09-26T17:03:48,balancesheet,1788501604829-ac8c0874-balancesheet.xlsx,1312,1225,87,SUCCESS
+2026-09-26T17:03:48,analysis,1788501604303-57986a9b-analysis.xlsx,20,20,0,SUCCESS
+2026-09-26T17:03:48,documents,1788501606362-ba899c04-documents.xlsx,1585,1585,0,SUCCESS
+2026-09-26T17:03:48,prosandcons,1788501607452-d6bbe55b-prosandcons.xlsx,16,16,0,SUCCESS
+2026-09-26T17:03:48,financial_ratios,1788501620089-fb3ae469-financial_ratios.xlsx,1184,1076,108,SUCCESS
+2026-09-26T17:03:48,market_cap,1788501620397-69ae3e7f-market_cap.xlsx,552,552,0,SUCCESS
+2026-09-26T17:03:48,peer_groups,1788501620796-5060f580-peer_groups.xlsx,56,56,0,SUCCESS
+2026-09-26T17:03:48,sectors,1788501621129-8684701e-sectors.xlsx,92,92,0,SUCCESS
+2026-09-26T17:03:48,stock_prices,1788501621395-a51977cd-stock_prices.xlsx,5520,5520,0,SUCCESS

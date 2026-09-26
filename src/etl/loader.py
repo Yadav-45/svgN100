@@ -1,6 +1,7 @@
 from pathlib import Path
 import sqlite3
-import pandas as pd
+import pandas as pd 
+from src.etl.audit import create_audit_report
 
 
 RAW_DIR = Path("data/raw")
@@ -130,16 +131,27 @@ def load_file(connection, filename, table_name):
 
     if not file_path.exists():
         print(f"WARNING: File not found: {filename}")
-        return
+        return {
+            "table_name": table_name,
+            "source_file": filename,
+            "rows_read": 0,
+            "rows_loaded": 0,
+            "duplicates_removed": 0,
+            "status": "FILE_NOT_FOUND",
+        }
 
     print(f"\nLoading: {filename}")
 
     df = read_excel_file(file_path)
 
-    print(f"Rows read: {len(df)}")
+    rows_read = len(df)
+
+    print(f"Rows read: {rows_read}")
     print(f"Columns: {list(df.columns)}")
 
     df = df.dropna(how="all")
+
+    duplicates_removed = 0
 
     if table_name in {
         "profitandloss",
@@ -174,7 +186,18 @@ def load_file(connection, filename, table_name):
         index=False
     )
 
-    print(f"✓ Loaded {len(df)} rows into {table_name}")
+    rows_loaded = len(df)
+
+    print(f"✓ Loaded {rows_loaded} rows into {table_name}")
+
+    return {
+        "table_name": table_name,
+        "source_file": filename,
+        "rows_read": rows_read,
+        "rows_loaded": rows_loaded,
+        "duplicates_removed": duplicates_removed,
+        "status": "SUCCESS",
+    }
 
 def main():
 
@@ -229,14 +252,22 @@ def main():
                 "1788501621395-a51977cd-stock_prices.xlsx",
         }
 
+        load_results = []
+
         for table_name, filename in datasets.items():
-            load_file(
+
+            result = load_file(
                 connection,
                 filename,
                 table_name
             )
 
+            if result:
+                load_results.append(result)
+
         connection.commit()
+
+        create_audit_report(load_results)
 
         print("\n" + "=" * 60)
         print("ETL LOADING COMPLETE")
