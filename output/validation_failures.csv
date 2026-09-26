@@ -1,2 +1,13 @@
 rule_id,severity,table_name,record_id,company_id,year,message
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2014,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2015,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2016,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2017,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2018,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2019,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2020,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2021,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2022,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2023,Duplicate company-year record found. Occurrences: 2
+DQ-04,WARNING,financial_ratios,,ABB,Mar 2024,Duplicate company-year record found. Occurrences: 2
 DQ-05,CRITICAL,profitandloss,86,ADANIENSOL,Mar 2014,Sales must be greater than zero. Actual value: 0.0

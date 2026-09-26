@@ -30,7 +30,7 @@ def add_failure(
 
 
 def validate_positive_sales(connection, failures):
-    """DQ: Sales must be greater than zero."""
+    """DQ-05: Sales must be greater than zero."""
 
     rows = connection.execute("""
         SELECT
@@ -52,12 +52,15 @@ def validate_positive_sales(connection, failures):
             record_id=row[0],
             company_id=row[1],
             year=row[2],
-            message=f"Sales must be greater than zero. Actual value: {row[3]}",
+            message=(
+                f"Sales must be greater than zero. "
+                f"Actual value: {row[3]}"
+            ),
         )
 
 
 def validate_foreign_keys(connection, failures):
-    """Check SQLite foreign-key integrity."""
+    """DQ-03: Check SQLite foreign-key integrity."""
 
     rows = connection.execute(
         "PRAGMA foreign_key_check"
@@ -77,7 +80,7 @@ def validate_foreign_keys(connection, failures):
 
 
 def validate_company_count(connection, failures):
-    """Check that exactly 100 unique companies exist."""
+    """DQ-01: Check that exactly 100 unique companies exist."""
 
     total = connection.execute(
         "SELECT COUNT(*) FROM companies"
@@ -103,8 +106,72 @@ def validate_company_count(connection, failures):
         )
 
 
+def validate_duplicate_company_ids(connection, failures):
+    """DQ-02: Check that company IDs are unique."""
+
+    rows = connection.execute("""
+        SELECT
+            id,
+            COUNT(*) AS duplicate_count
+        FROM companies
+        GROUP BY id
+        HAVING COUNT(*) > 1
+    """).fetchall()
+
+    for row in rows:
+        add_failure(
+            failures=failures,
+            rule_id="DQ-02",
+            severity="CRITICAL",
+            table_name="companies",
+            record_id="",
+            company_id=row[0],
+            year="",
+            message=(
+                f"Duplicate company ID found. "
+                f"Occurrences: {row[1]}"
+            ),
+        )
+
+
+def validate_company_year_duplicates(connection, failures):
+    """DQ-04: Check for duplicate company-year records."""
+
+    tables = [
+        "profitandloss",
+        "balancesheet",
+        "financial_ratios",
+    ]
+
+    for table_name in tables:
+        rows = connection.execute(f"""
+            SELECT
+                company_id,
+                year,
+                COUNT(*) AS duplicate_count
+            FROM {table_name}
+            GROUP BY company_id, year
+            HAVING COUNT(*) > 1
+        """).fetchall()
+
+        for row in rows:
+            add_failure(
+                failures=failures,
+                rule_id="DQ-04",
+                severity="WARNING",
+                table_name=table_name,
+                record_id="",
+                company_id=row[0],
+                year=row[1],
+                message=(
+                    f"Duplicate company-year record found. "
+                    f"Occurrences: {row[2]}"
+                ),
+            )
+
+
 def validate_stock_prices(connection, failures):
-    """Check for invalid stock closing prices."""
+    """DQ-10: Check for invalid stock closing prices."""
 
     rows = connection.execute("""
         SELECT
@@ -126,16 +193,17 @@ def validate_stock_prices(connection, failures):
             record_id=row[0],
             company_id=row[1],
             year=row[2],
-            message=(
-                f"Invalid close price: {row[3]}"
-            ),
+            message=f"Invalid close price: {row[3]}",
         )
 
 
 def write_failures(failures):
     """Write validation failures to CSV."""
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     columns = [
         "rule_id",
@@ -180,21 +248,37 @@ def main():
 
     print("\nRunning validation rules...")
 
+    # DQ-01
     validate_company_count(
         connection,
         failures,
     )
 
+    # DQ-02
+    validate_duplicate_company_ids(
+        connection,
+        failures,
+    )
+
+    # DQ-03
     validate_foreign_keys(
         connection,
         failures,
     )
 
+    # DQ-04
+    validate_company_year_duplicates(
+        connection,
+        failures,
+    )
+
+    # DQ-05
     validate_positive_sales(
         connection,
         failures,
     )
 
+    # DQ-10
     validate_stock_prices(
         connection,
         failures,
